@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+data/*
+!data/splits.json
+out/
+models/
+calib_check/
+mujoco_menagerie/
+*.pt
+*.ts
+*.pkl
+*.MOV
+*.mov
+*.mp4

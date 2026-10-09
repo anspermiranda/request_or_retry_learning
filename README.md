@@ -2,25 +2,32 @@
 
 **A robot arm learns to put a can on a coaster from my phone videos. It starts with 7 videos, checks itself at 13
 practice spots across the desk, and fixes each weak spot with the cheapest help that works: imagine it (free),
-practise it (robot time), or ask me for one more video (my time).**
+practise it (robot time), or ask me for one more video (my time). Then it is tested at 7 spots from videos it never
+saw, and at 100 random spots on the desk.**
 
 ![my video (left) and the robot copying it in a MuJoCo copy of my desk (right)](docs/robot_copies_my_video.gif)
 
 | exam: 7 spots from videos it never saw (70 tries, average of 3 runs) | success | my videos used | robot minutes |
 |---|---|---|---|
-| **my robot: imagine → retry → request** | **74%** | **9** | **87** |
-| always ask for a video | 72% | 13.3 | 103 |
-| always practise | 74% | 7 | 133 |
-| all 33 videos up front, trained once (no asking, no practice) | 78% | 33 | about 75 |
+| **mine: imagine → retry → request** | **74%** | **9** | **87** |
+| always ask for a video (request only) | 72% | 13.3 | 103 |
+| always practise (retry only) | 74% | 7 | 133 |
+| all 33 videos at the start, trained once | 78% | 33 | about 75 |
 
 - **success:** the can ends upright on the coaster, the gripper has let go, and nothing else on the desk was touched.
 - **my videos used:** the 7 it starts with, plus the ones it asked me for.
 - **robot minutes:** how long the arm is busy: turning each video into robot demos, checking itself and practising,
   plus 20 s to put the can back after every attempt.
+- **all 33 videos at the start:** the upper bound. It gets every video it could ever ask for and trains on them once,
+  so it never needs to ask or practise.
 
-Mine gets 74%, close to the 78% from all 33 videos, while using only 9 of them. Practising alone also gets 74%, but
-takes 133 robot minutes to my 87. At 100 random spots on the desk, my robot succeeds 96% of the time, and 97% when it
-finds the can with its own camera (see [Anywhere on the desk](#anywhere-on-the-desk)).
+Mine gets 74%, close to the 78% from all 33 videos, but needs only 9 of them. Practising alone also gets 74%, but
+takes 133 robot minutes to my 87.
+
+The exam is harder than the rest of the desk: 2 of its 7 spots are right next to the robot's base, where every method
+fails most of the time (see [Where it fails](#where-it-fails-and-why)). On the other 5, my robot succeeds 97% of the
+time. At 100 random spots on the desk it succeeds 96%, and 97% when it finds the can with its own camera (see
+[Anywhere on the desk](#anywhere-on-the-desk)).
 
 ## The idea
 
@@ -35,7 +42,7 @@ weak spot:
 | 2 | **retry**: practise with the arm. Once with the closest video it already has, moved to start at this spot, and 5 times with its own policy; it learns from the attempts that worked | robot time | it has something to build on: one of the videos it already has starts within 10 cm, or it already succeeds there sometimes |
 | 3 | **request**: ask me for a new video, one that starts near this spot | my time | nothing to build on, or practice didn't work |
 
-Retry and imagine only re-use videos the robot already has. A request is the only way it gets a new one.
+Imagine and retry only re-use videos the robot already has. A request is the only way it gets a new one.
 
 ## How it works
 
@@ -90,20 +97,29 @@ robot's own camera finds it.
 `twin.py`, `retarget.py`
 
 - **The desk.** A MuJoCo copy of my desk: the coaster, laptop, book and the other objects are where my videos show
-  them, and a Franka Panda (from MuJoCo Menagerie) stands where I sat. A camera in MuJoCo sits where my phone was.
+  them, and a Franka Panda (from MuJoCo Menagerie) stands where I sat. It works like a Gym environment, with `reset()`
+  and `step()`.
 - **From my hand: when. From the can: where.** The 21 points on my hand tell the robot when I grasped and when I let
   go; the can's path tells it where to carry the can. What it doesn't copy is my hand's shape: a two-finger gripper
   can't use my fingers and wrist, so it always grasps from the top, at the same height on the can. So it reaches the
   can where it stood, closes when my hand closed, carries it along my path with my timing (1.5× slower), sets it down
   where I did and lets go.
-- **A safety margin.** My hand passed just over the desk hub and the glasses case because I could see them. The robot
-  can't, so wherever my path goes over an object it carries the can at least 2 cm above it.
-- **Result.** 39 of my 40 videos become robot demos. IMG_8710 starts so close to the robot's base that its elbow hits
-  its limit. Each video gives 4 demos: an exact copy, and three with small random pushes along the way, so the robot
+- **A video becomes a controller, not a recording.** At every step it looks at where the can really is: it goes to the
+  can wherever it stands, tries again if the grasp misses, and carries it along my path point by point. So the same
+  video also works when the can is nudged, inside the world model, and from a different start spot: my path is
+  shifted to start there, and the shift fades out along the way, so it still ends on the coaster. That's how one of my
+  videos can help at a weak spot nearby.
+- **Pushes.** Each video gives 4 demos: an exact copy, and three with small random pushes along the way, so the robot
   also sees how to get back on track.
-- **A different robot position** (the brief's "challenging embodiments"). The same robot standing at the right side
-  of the desk (`retarget.py --base 0.35 -0.10`) can copy only 23 of the 40 videos: the far-left ones are out of its
-  reach. Which of my videos are useful depends on the robot's body and where it stands.
+- **A safety margin.** My hand passed just over the desk hub and the glasses case because I could see them. The robot
+  can't, so wherever my path goes over an object it carries the can at least 2 cm above it. Without the margin, the
+  carried can touched something in 6 of my videos, and my robot ended at 59% instead of 74%. The margin changes how my
+  videos become demos, not the test.
+- **Result.** 39 of my 40 videos become robot demos. IMG_8710 starts so close to the robot's base that its elbow hits
+  its limit.
+- **Where the robot stands matters.** Standing at the right side of the desk instead
+  (`retarget.py --base 0.35 -0.10`), the same robot can copy only 23 of the 40 videos: the far-left ones are out of
+  its reach. Which of my videos are useful depends on the robot's body and where it stands.
 
 `python watch.py IMG_8682 --copy --viewer` plays a copy live in the MuJoCo window, with my path in yellow and the
 robot's in green.
@@ -132,13 +148,19 @@ Every method draws from the same pile, so the comparison is fair.
 and the coaster are relative to its gripper, and how far its fingers are open, and plans its next 8 moves. It never
 sees where on the desk it is, so it can't memorise spots.
 
+I started with plain behaviour cloning, and it didn't work well. It copied its own last gripper command, so it never
+closed, and it blurred the grasp and the release. Removing that input, showing it those moments 10× more often and
+planning 8 moves ahead all helped, but on the same data it still only gets 46% on the exam, against 76% for the
+diffusion policy.
+
 **Each round** (5 rounds):
 1. Train the policy on everything it has: the robot demos from its videos, and its own attempts that worked
    (practised or imagined). Round 0 starts from scratch; later rounds keep training the same network.
 2. Check itself at 13 practice spots spread over the desk, 2 tries each, with the can nudged by about 1 cm. These are
    its own checks; the exam spots are kept away from them.
 3. Take its weakest spots (up to 4, only those below 100%) and fix each with the cheapest help that works: imagine,
-   retry, request (see The idea). Where it already succeeds, it asks for nothing.
+   retry, request (see [The idea](#the-idea)). Where it already succeeds, it asks for nothing: a video there would
+   cost my time for no gain.
 4. Update the world model on everything the arm has really done, draw a map of the round, and start the next one.
 
 **Costs** are counted the same way for every method:
@@ -148,6 +170,11 @@ sees where on the desk it is, so it can't memorise spots.
 
 Where the world model has proven right and the robot already succeeds, it also checks itself in its head instead of
 with the arm, for free.
+
+**Practice is the reinforcement learning part.** The reward is 1 when the can ends upright on the coaster with nothing
+else touched, and 0 otherwise. The robot keeps its own attempts that earned a 1 and trains on them: filtered behaviour
+cloning, the simplest form of reward-weighted regression. Every attempt costs 30–45 s of robot time with the reset, so
+a whole run has only about 150 real attempts, far too few for policy-gradient methods like PPO.
 
 <img src="results/ladder_map_round0.png" width="49%"> <img src="results/ladder_map_round4.png" width="49%">
 
@@ -167,25 +194,30 @@ videos also imagined and asked.*
   (a colour + depth camera across the desk that picks out the light-blue can) instead of being told where it is. The
   coaster never moves, so its position is known.
 - **A try counts only if** the can ends upright on the coaster, the gripper has let go, and nothing else on the desk
-  was touched, by the arm or by the can. My path isn't compared: any path is fine.
+  was touched, by the arm or by the can. My path isn't compared: any path is fine. A failure anywhere along the way
+  (dropped, tipped over, touched something, missed the coaster) counts against the spot where the can started, and the
+  reason is saved.
 - The exam is only measured, never used to decide anything. It is separate from the robot's own checks at the 13
   practice spots.
+
+My first version only checked the arm for touches, not the can it carries. Every method then ended at 70–72% and
+looked the same; checking the can too is what showed the real differences.
 
 ## Results
 
 | on the 7 exam spots (70 tries; average of 3 runs) | success | my videos used | robot minutes |
 |---|---|---|---|
-| start: 7 videos, no help | 65% | 7 | 16 |
-| **imagine → retry → request (mine)** | **74%** | **9** | **87** |
-| always ask for a video | 72% | 13.3 | 103 |
-| always practise | 74% | 7 | 133 |
+| start: my 7 videos, no help yet | 65% | 7 | 16 |
+| **mine: imagine → retry → request** | **74%** | **9** | **87** |
+| always ask for a video (request only) | 72% | 13.3 | 103 |
+| always practise (retry only) | 74% | 7 | 133 |
 | 2 random videos per round | 69% | 17 | 115 |
-| all 33 videos up front, trained once | 78% | 33 | about 75 |
+| all 33 videos at the start, trained once | 78% | 33 | about 75 |
 
 - **Mine ties for the best score of the methods that learn round by round, with the least robot time.** Always
   practising matched it, but needed 53% more robot time to save 2 videos. Always asking needed 6.3 extra videos
   instead of 2, and still ended lower.
-- **It gets within 4 points of all 33 videos up front**, with 9.
+- **It gets within 4 points of all 33 videos**, with 9.
 - **It asks only when practice can't fix a spot.** Starting from my 7 videos it never asked: practising fixed every
   weak spot. Starting from the two random sets of 7, it asked for 3 videos each.
 - **Most of the robot time it saves comes from imagination.** It checked itself in its head 79 times instead of with
@@ -210,10 +242,11 @@ ask for another video.
 |---|---|
 | **my robot, finding the can with its own camera** | **97%** (its estimate of where the can is: 0.6 cm off on average) |
 | my robot, told where the can is | 96% |
-| all 33 videos up front, told where the can is | 97% |
+| all 33 videos at the start, told where the can is | 97% |
 
 - **It works almost anywhere on the desk, not just where my videos start.** 31 of the 100 spots are more than 10 cm
-  from where any video it learned from starts, and it still succeeds at 90% of those.
+  from where any video it learned from starts, and it still succeeds at 90% of those. It learned the task, not my
+  spots.
 - **Seeing the can for itself costs nothing here**: 97% against 96%, the same within one spot.
 - **The few failures are scattered**, not in one area: tipped over, touched the book or the charger, missed the
   coaster.
@@ -265,6 +298,12 @@ correctly. The model can't see the objects on the desk, so trust is what stops t
 
 ![the same policy in physics and inside the world model](docs/imagined_vs_real.gif)
 
+**Why a world model, and not a VLA like SmolVLA?** SmolVLA's guide recommends about 50 demonstrations and says 25
+weren't enough, while my robot starts from 7 videos on purpose. And the experiment retrains the policy 72 times
+(4 methods × 3 runs × 6 trainings), where one standard SmolVLA fine-tune takes about 4 hours on a datacentre GPU. The
+robot demos made from my videos are exactly the kind of data a VLA is fine-tuned on, so swapping one in, with camera
+images rendered from the copy of my desk, is the natural next step.
+
 ## Speed
 
 `speed.py`
@@ -282,128 +321,45 @@ The final policy from my run (76% on the exam), run different ways on the same 7
 The policy predicts clean moves rather than noise, which is what keeps 4 steps as good as 100. The one-pass student is
 fast but blurs the moments that matter most: closing and letting go.
 
-## How this answers the brief
+## How to run it
 
-| the brief | here |
-|---|---|
-| your own data drives a robot arm in a simple simulator | 42 phone videos → the can's path and my grasp and release → a Panda in a MuJoCo copy of my desk |
-| VLA and/or world models | a world model that predicts the robot's future, with trust measured spot by spot, used to test and train the robot without the arm |
-| post-train a policy on your data | my own small policy, trained from scratch on robot demos made from my videos, then trained further every round on the new data it collects. No large pretrained model (see "Why not SmolVLA?") |
-| creative retargeting, challenging embodiments | the robot copies the can's path and my hand's timing, not my hand's shape, with a safety margin; standing at the right side of the desk it can copy only 23 of my 40 videos |
-| bootstrap a policy, then RL | starts from 7 videos; practice keeps the attempts that earned reward 1 |
-| world modelling: video/state prediction | state prediction, rendered as video (imagined vs real) |
-| optimise a policy to run faster | 37× faster with the same success |
+Tested on Ubuntu with Python 3.14. A GPU only helps with reading the videos; everything else runs on a laptop CPU.
 
-**Beyond the brief: the research questions it touches.**
-
-| research area | here |
-|---|---|
-| world models as learned simulators: scoring policies offline, synthetic rollouts for training | the robot checks itself inside its world model instead of with the arm (79 times), and trains on imagined demos where the model predicts success |
-| fidelity metrics for where a world model can be trusted | trust measured spot by spot; trusted spots are predicted right 87% of the time, the others 80% |
-| the embodiment gap between human and robot data, data attribution | my hand's videos become robot demos: where the can went, and when my hand grasped and let go; the robot decides which new data it needs, and where |
-| inference and optimisation | the same policy 37× faster with the same success |
-| RL and manipulation tasks in MuJoCo | a MuJoCo copy of my desk with a 0/1 reward, and practice that keeps the attempts that earned it |
-
-**The task as an RL problem.**
-- **State:** the gripper's position, the can's position, and the fingers.
-- **Action:** a move of up to 2.5 cm and open or close, 10 times a second.
-- **Reward:** 1 if the can ends upright on the coaster, released, with nothing else touched; 0 otherwise.
-- **Learning:** practice explores with the policy's own randomness, and the attempts with reward 1 are added to its
-  training data. With a 0/1 reward this is filtered behaviour cloning, the simplest form of reward-weighted regression.
-- **Environment:** `twin.py` has `reset()` and `step()` like a Gym environment.
-
-## What worked, what didn't
-
-**Worked**
-- Copying the can's path and my hand's timing, not my hand's shape: 39 of 40 videos become robot demos.
-- The safety margin. In the run without it, the carried can touched objects in 4 of 35 exam tries and 6 videos couldn't
-  be used; my robot scored 59%. With it: no touches, 74%.
-- Practice: the robot's own successful attempts helped as much as extra videos, without costing my time.
-- The world model's checks in its head: about 90 robot minutes saved over the 3 runs, right 97% of the time.
-- The diffusion policy: 76%, against 46% for plain behaviour cloning on the same data.
-
-**Didn't**
-- Plain behaviour cloning. It copied its own last gripper command and never closed, and it blurred the grasp and the
-  release. Removing that input, sampling those moments 10× more often and planning 8 moves ahead helped, but it stayed
-  far behind.
-- The one-pass student (41%).
-- Predicting noise instead of clean moves: with 4 steps the moves were 12 mm off instead of 4 mm.
-- The two spots next to the robot's base. None of the videos it can learn from starts that close.
-- My first version counted only the arm touching objects, and every run started from my 7. All methods ended at 70–72%
-  and looked the same. The stricter test showed what was really going on, and the safety margin fixed it.
-
-## Questions I'd ask
-
-**Why not train on all the videos?** Every video costs someone's time; the point is to need as few as possible and to
-know which one to ask for. All 33 up front gives 78%; mine reaches 74% with 9.
-
-**Does it learn, or memorise?** The policy only sees positions relative to its gripper, never where on the desk it is.
-It is tested on 7 spots from videos it never saw and on 100 random spots, and is never trained there. At the random
-spots more than 10 cm from any video it learned from, it still succeeds 90% of the time.
-
-**Why does it not ask for videos of every unexplored area?** It checks itself at 13 practice spots across the desk
-every round. Where it already succeeds, a new video would cost my time for nothing, so it only asks where it fails and
-practising can't fix it.
-
-**What if it fails halfway, while carrying the can?** Any failure counts against the spot where the can started, and
-the reason is saved ("touched the laptop", "tipped over", "missed the coaster"). That spot then gets help like any
-other.
-
-**Does the exam check that the robot follows my path?** No. Any path is fine, as long as the can ends on the coaster
-and nothing else is touched.
-
-**Isn't the safety margin making things easy?** It changes how my videos become robot demos, not the test. The exam
-has the same spots and rules with and without it, and the robot still has to learn to lift the can over objects at
-spots it has never seen.
-
-**Is this idea new?** The pieces aren't. The closest work I know is Rigter, Lacerda & Hawes, where a robot chooses for
-each attempt between asking a person to teleoperate it and acting on its own, to save human time. What's different
-here: a free first rung (the world model, used only where it has proven right), help that comes as a phone video of my
-hand rather than teleoperation, and counting both my time and robot time.
-
-**Why not SmolVLA?** The brief asks for VLA and/or world models, and I chose world models. A VLA doesn't fit this
-experiment, for two reasons:
-- **It needs more data.** SmolVLA's guide recommends about 50 demonstrations and says 25 weren't enough. My robot
-  starts from 7 videos on purpose.
-- **It's too heavy to retrain every round.** My robot retrains its policy every round, 72 trainings across the
-  experiment (4 methods × 3 runs × 6), and one standard SmolVLA fine-tune takes about 4 hours on a datacentre GPU.
-
-The robot demos made from my videos are exactly the kind of data a VLA is fine-tuned on, so swapping one in, with
-camera images rendered from the copy of my desk, is the natural next step.
-
-**Why not PPO?** Every attempt costs 30–45 s of robot time with the reset, so a whole run has only about 150 real
-attempts. Policy-gradient fine-tuning needs far more than that; keeping the successes is simple, stable and cheap.
-
-## Run it from A to Z
-
-**1. Code, robot model and environment** (tested on Ubuntu with Python 3.14; a GPU only helps for reading the
-videos):
+### 1. Install
 
 ```bash
 git clone https://github.com/anspermiranda/request_or_retry_learning.git
 cd request_or_retry_learning
 git clone --depth 1 --filter=blob:none --sparse https://github.com/google-deepmind/mujoco_menagerie.git
-(cd mujoco_menagerie && git sparse-checkout set franka_emika_panda)
+(cd mujoco_menagerie && git sparse-checkout set franka_emika_panda)     # the Panda robot model
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**2. Watch the trained robot straight away.** The measurements from my videos (`out/`) and the trained policies
-(`results/*.pkl`) are in the repository. My path is drawn in yellow, the robot's in green:
+### 2. Watch the trained robot
+
+No downloads needed: the measurements from my videos (`out/`) and the trained robot (`results/*.pkl`) are in the
+repository.
 
 ```bash
 python watch.py IMG_8697 --viewer   # an exam spot: live in the MuJoCo window, then my video next to the robot
 python watch.py --exam              # all 7 exam spots
 python watch.py --train             # the 7 spots it started learning from
-python watch.py IMG_8682 --copy     # the robot copying my video directly
+python watch.py IMG_8682 --copy     # the robot copying my video directly, before any learning
 python watch.py IMG_8697 --eye      # the robot finding the can with its own camera
 ```
 
-The videos themselves are too big for the repository, so the left side stays grey until you download them (step 3).
+Yellow is my path, green is the robot's; space pauses, q quits. My videos are too big for the repository, so the left
+side stays grey until you download them (step 3a).
 
-**3. Download my videos** (42 clips and the checkerboard video) from the
-[dataset release](https://github.com/anspermiranda/request_or_retry_learning/releases/tag/dataset-v1):
+### 3. Rebuild everything from my 42 videos
+
+This repeats my whole pipeline in order: my videos → measurements → robot demos → learning from 7 videos → the exam.
+Each step overwrites my files in the repository with yours, and the numbers it prints should match the ones on this
+page.
+
+**3a. Download my videos** (42 clips and the checkerboard video, about 1.4 GB):
 
 ```bash
 mkdir -p data/demos data/calibration
@@ -413,34 +369,64 @@ done
 curl -L -o data/calibration/checkerboard.MOV https://github.com/anspermiranda/request_or_retry_learning/releases/download/dataset-v1/checkerboard.MOV
 ```
 
-**4. Read the videos again** (optional: the results are already in `out/`). The YOLOE, SAM 2 and MediaPipe models
-download themselves the first time.
+**3b. Read the videos** (about 2 hours with a GPU). The YOLOE, SAM 2 and MediaPipe models download themselves the
+first time.
 
 ```bash
-python calibrate_camera.py data/calibration/checkerboard.MOV   # the phone's camera (calibration.json is included)
-python read_demos.py data/demos                                # 42 videos -> out/<clip>/ (~2 h, faster with a GPU)
-python collect_results.py                                      # a quality check per video -> out/results_table.csv
+python calibrate_camera.py data/calibration/checkerboard.MOV   # the phone's camera -> calibration.json
+python read_demos.py data/demos --redo                         # all 42 videos -> out/<clip>/ (--redo: don't reuse mine)
+python collect_results.py                                      # a quality check of every video -> out/results_table.csv
 python make_splits.py --start IMG_8682 IMG_8688 IMG_8690 IMG_8703 IMG_8707 IMG_8718 IMG_8723   # -> data/splits.json
 ```
 
-**5. Run everything else** with one command (about 1 hour on a 16-thread laptop):
+`read_demos.py` should end with `Done: 40/42 clips clean`: IMG_8700 and IMG_8715 get flagged (see step 1).
+
+**3c. Turn the videos into robot demos** (about 6 minutes):
 
 ```bash
-bash run_all.sh
+python retarget.py                     # -> sim/, prints "The robot copied 39/40 of my videos"
+python retarget.py --base 0.35 -0.10   # the robot at the right side of the desk -> sim_base/, prints 23/40
 ```
 
-It runs these in order:
+**3d. Learn from my 7 videos, and compare every method** (about 40 minutes):
 
-| command | what it does | writes |
-|---|---|---|
-| `python retarget.py` | the robot copies every video | `sim/`, the robot demos |
-| `python retarget.py --base 0.35 -0.10` | the same, with the robot standing at the right side of the desk | `sim_base/` |
-| `python experiment.py` | every method, 3 runs of 5 rounds (about 40 min) | `results/summary.json`, the maps, the curves, the trained policies |
-| `python evaluate.py` | the final robot in detail, also with its own camera | `results/evaluation.md` |
-| `python desk_test.py` | the final robot at 100 random spots | `results/desk_map.png`, `results/desk_test.json` |
-| `python speed.py` | the same policy, run faster | `results/speed.json` |
-| `python watch.py ... --save --no-window` | my video next to the robot | `results/watch_*.mp4` |
-| `python make_gif.py ...` | the GIFs on this page | `docs/` |
+```bash
+python experiment.py
+```
+
+The robot starts from my 7 videos and goes through 5 rounds of checking itself and getting help; then the same for
+every other method, 3 runs each. It ends with this table:
+
+```
+  imagine > retry > request (mine)  exam  65% ->  74% | my videos 9.0 | robot 87 min | imagined demos 1.3
+  request only                      exam  65% ->  72% | my videos 13.3 | robot 103 min | imagined demos 0.0
+  retry only (RL)                   exam  65% ->  74% | my videos 7.0 | robot 133 min | imagined demos 0.0
+  random videos                     exam  65% ->  69% | my videos 17.0 | robot 115 min | imagined demos 0.0
+  all videos at once                exam         78% | my videos 33 (upper bound, no rounds)
+```
+
+**3e. Test the final robot** (about 20 minutes):
+
+```bash
+python evaluate.py    # the exam in detail, also with its own camera -> results/evaluation.md
+python desk_test.py   # 100 random spots on the desk -> results/desk_map.png (96%, and 97% with its own camera)
+python speed.py       # the same policy, run faster -> results/speed.json (DDIM 4 steps: 37x faster)
+```
+
+**3f. Make the side-by-side videos and the GIFs on this page:**
+
+```bash
+python watch.py IMG_8707 --copy --save --no-window      # -> results/watch_IMG_8707_copy.mp4
+python watch.py --exam --save --no-window               # -> results/watch_<exam video>.mp4
+python watch.py --train --save --no-window              # -> results/watch_<start video>.mp4
+python make_gif.py results/watch_IMG_8707_copy.mp4 docs/robot_copies_my_video.gif
+python make_gif.py results/watch_IMG_8697.mp4 docs/exam_spot.gif
+python make_gif.py results/imagined_vs_real.mp4 docs/imagined_vs_real.gif
+python make_gif.py out/IMG_8707/annotated.mp4 docs/what_the_computer_sees.gif
+```
+
+**Short on time?** Skip 3a and 3b: my measurements are already in `out/`, so you can start at 3c. Steps 3c to 3f are
+also in one script, `bash run_all.sh` (about an hour).
 
 ## Files
 
@@ -462,15 +448,20 @@ It runs these in order:
 | `speed.py` | the same policy, faster |
 | `watch.py` | my video next to the robot, and the live MuJoCo window |
 | `make_gif.py` | GIFs for this page |
+| `run_all.sh` | steps 3c to 3f in one go |
 
 ## Related work
+
+The closest idea I know is Rigter, Lacerda & Hawes, *A Framework for Learning from Demonstration with Minimal Human
+Effort*, where a robot chooses for each attempt between asking a person to teleoperate it and acting on its own, to
+save human time. What's different here: a free first rung (the world model, used only where it has proven right), help
+that comes as a phone video of my hand rather than teleoperation, and counting both my time and robot time.
 
 - Diffusion Policy (Chi et al., 2023); DDIM (Song et al., 2021)
 - ACT (Zhao et al., 2023): planning several moves at once
 - DART (Laskey et al., 2017): small pushes during demonstrations
 - MimicGen (Mandlekar et al., 2023): adapting a few demos to new object positions
 - Reward-weighted regression (Peters & Schaal, 2007)
-- Rigter, Lacerda & Hawes, A Framework for Learning from Demonstration with Minimal Human Effort: the closest idea to
-  this one; ThriftyDAgger (Hoque et al., 2021): deciding when to ask a human for help
+- ThriftyDAgger (Hoque et al., 2021): deciding when to ask a human for help
 - PETS (Chua et al., 2018); MBPO (Janner et al., 2019): ensembles of learned world models
 - YOLOE, SAM 2 and MediaPipe for reading the videos; MuJoCo, MuJoCo Menagerie and mink for the simulation

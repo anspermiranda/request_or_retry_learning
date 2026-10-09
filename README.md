@@ -1,4 +1,4 @@
-# Request or Retry
+# Request or Retry learning
 
 **A robot arm learns to put a can on a coaster from my phone videos. It starts with 7 videos, checks itself at 13
 practice spots across the desk, and fixes each weak spot with the cheapest help that works: imagine it (free),

@@ -1,14 +1,23 @@
+# environments and caches
 .venv/
 __pycache__/
-data/*
-!data/splits.json
-out/
-models/
-calib_check/
-mujoco_menagerie/
+# model weights that download themselves (YOLOE, SAM 2, MediaPipe)
 *.pt
 *.ts
-*.pkl
+*.task
+models/
+# big or bulky files: the videos are in the GitHub release, the rest is rebuilt by the scripts
 *.MOV
 *.mov
 *.mp4
+*.zip
+*.log
+data/demos/
+data/calibration/
+mujoco_menagerie/
+out/*/tracks.pkl
+sim/*.npz
+sim_base/*.npz
+calib_check/
+# earlier versions, kept on my laptop only
+old/

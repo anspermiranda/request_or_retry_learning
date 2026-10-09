@@ -1,0 +1,1003 @@
+{
+ "strategy": "ladder",
+ "run": 1,
+ "start": [
+  "IMG_8688",
+  "IMG_8692",
+  "IMG_8696",
+  "IMG_8707",
+  "IMG_8708",
+  "IMG_8716",
+  "IMG_8717"
+ ],
+ "history": [
+  {
+   "round": 0,
+   "exam_success": 0.5,
+   "exam_per_spot": [
+    0.8,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.7,
+    0.0
+   ],
+   "exam_failures": [
+    "tipped over",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster"
+   ],
+   "videos": 7,
+   "minutes_of_my_time": 3.3833333333333333,
+   "robot_minutes": 15.861666666666666,
+   "imagined": 0,
+   "train_episodes": 25,
+   "practice_success": 0.46153846153846156,
+   "practice_rates": [
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "decisions": [
+    "ok",
+    "request",
+    "ok",
+    "request",
+    "retry",
+    "ok",
+    "ok",
+    "retry",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ],
+   "trust": [
+    {
+     "error_cm": 50.355381383203564,
+     "spread_cm": 132.9852304299732,
+     "agree": 0.0,
+     "trusted": false
+    },
+    {
+     "error_cm": 211.3322469651298,
+     "spread_cm": 778.0815579977016,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.3309052568456905,
+     "spread_cm": 3.028359549137112,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 745.881420944401,
+     "spread_cm": 1375.6901166010302,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 291.71296439454545,
+     "spread_cm": 541.2631431347426,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 0.42872685262930904,
+     "spread_cm": 0.8800091906702769,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.9155775023681931,
+     "spread_cm": 2.305516918419394,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 37.31409133581807,
+     "spread_cm": 55.19799328777191,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 6.804074900818284,
+     "spread_cm": 18.539899040971587,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 8.613529014301918,
+     "spread_cm": 19.77499682519956,
+     "agree": 0.0,
+     "trusted": false
+    },
+    {
+     "error_cm": 64.1055076939897,
+     "spread_cm": 74.66608395893851,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 55.36412729749982,
+     "spread_cm": 73.8726776498997,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 130.68782493133685,
+     "spread_cm": 277.1108558076628,
+     "agree": 1.0,
+     "trusted": true
+    }
+   ],
+   "tests_imagined": 0,
+   "seconds": 52.18095874786377
+  },
+  {
+   "round": 1,
+   "exam_success": 0.7142857142857143,
+   "exam_per_spot": [
+    1.0,
+    0.8,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    0.2
+   ],
+   "exam_failures": [
+    "tipped over",
+    "touched the glasses case",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "never let go",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster"
+   ],
+   "videos": 9,
+   "minutes_of_my_time": 4.35,
+   "robot_minutes": 45.193333333333335,
+   "imagined": 0,
+   "train_episodes": 36,
+   "practice_success": 0.6153846153846154,
+   "practice_rates": [
+    0.5,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "decisions": [
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "imagine",
+    "ok",
+    "ok",
+    "imagine",
+    "imagine",
+    "request"
+   ],
+   "trust": [
+    {
+     "error_cm": 5.610242532014733,
+     "spread_cm": 2.449231126525377,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 30.502190373276473,
+     "spread_cm": 20.29451282382031,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.3309052568456905,
+     "spread_cm": 3.028359549137112,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 2.481497903931639,
+     "spread_cm": 2.4429974464854993,
+     "agree": 1.0,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.35133657325308,
+     "spread_cm": 1.0776171974597843,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 0.42872685262930904,
+     "spread_cm": 0.8800091906702769,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.9155775023681931,
+     "spread_cm": 2.305516918419394,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.35789499841331,
+     "spread_cm": 3.8587245562364125,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.4632724937216366,
+     "spread_cm": 1.0195630340674147,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 65.38975671205817,
+     "spread_cm": 118.21631581779938,
+     "agree": 1.0,
+     "trusted": false
+    },
+    {
+     "error_cm": 17808223390291.08,
+     "spread_cm": 54548390676469.5,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 7.782317988074784e+17,
+     "spread_cm": 1.278151219125255e+18,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 4.145098656028433e+16,
+     "spread_cm": 1.0899831224533739e+17,
+     "agree": 1.0,
+     "trusted": true
+    }
+   ],
+   "tests_imagined": 3,
+   "seconds": 33.651684284210205
+  },
+  {
+   "round": 2,
+   "exam_success": 0.7142857142857143,
+   "exam_per_spot": [
+    0.9,
+    0.8,
+    1.0,
+    1.0,
+    0.1,
+    1.0,
+    0.2
+   ],
+   "exam_failures": [
+    "touched the desk hub",
+    "touched the glasses case",
+    "tipped over",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "never let go",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "never let go",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "tipped over"
+   ],
+   "videos": 10,
+   "minutes_of_my_time": 4.833333333333333,
+   "robot_minutes": 60.135,
+   "imagined": 3,
+   "train_episodes": 48,
+   "practice_success": 0.9230769230769231,
+   "practice_rates": [
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "decisions": [
+    "ok",
+    "retry",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "retry",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ],
+   "trust": [
+    {
+     "error_cm": 0.8145030065397317,
+     "spread_cm": 2.192117143393309,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 31.330336851971087,
+     "spread_cm": 12.888540308965213,
+     "agree": 0.0,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.3309052568456905,
+     "spread_cm": 3.028359549137112,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 0.9907691327745858,
+     "spread_cm": 2.527153398068737,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.35133657325308,
+     "spread_cm": 1.0776171974597843,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 0.42872685262930904,
+     "spread_cm": 0.8800091906702769,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.9155775023681931,
+     "spread_cm": 2.305516918419394,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 2.352494144568191,
+     "spread_cm": 1.160813968219138,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.4632724937216366,
+     "spread_cm": 1.0195630340674147,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 2.843308973085616,
+     "spread_cm": 1.1150546697802788,
+     "agree": 1.0,
+     "trusted": false
+    },
+    {
+     "error_cm": 2.298812637669233,
+     "spread_cm": 7.935615293682884,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.0147268824564508,
+     "spread_cm": 2.0141160063552084,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.7968982929924986,
+     "spread_cm": 3.1053580695205913,
+     "agree": 1.0,
+     "trusted": true
+    }
+   ],
+   "tests_imagined": 5,
+   "seconds": 32.124650955200195
+  },
+  {
+   "round": 3,
+   "exam_success": 0.7571428571428571,
+   "exam_per_spot": [
+    1.0,
+    0.9,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    0.4
+   ],
+   "exam_failures": [
+    "tipped over",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "tipped over",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster"
+   ],
+   "videos": 10,
+   "minutes_of_my_time": 4.833333333333333,
+   "robot_minutes": 76.145,
+   "imagined": 3,
+   "train_episodes": 56,
+   "practice_success": 0.9615384615384616,
+   "practice_rates": [
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "decisions": [
+    "ok",
+    "retry",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ],
+   "trust": [
+    {
+     "error_cm": 0.8145030065397317,
+     "spread_cm": 2.192117143393309,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 27.535803079350945,
+     "spread_cm": 6.230121805436224,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.3309052568456905,
+     "spread_cm": 3.028359549137112,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.4825183230059853,
+     "spread_cm": 1.10538235224877,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.35133657325308,
+     "spread_cm": 1.0776171974597843,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 0.42872685262930904,
+     "spread_cm": 0.8800091906702769,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.9155775023681931,
+     "spread_cm": 2.305516918419394,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.2099387221845614,
+     "spread_cm": 0.9188798272351818,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.4632724937216366,
+     "spread_cm": 1.0195630340674147,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.6780492184443836,
+     "spread_cm": 0.8022682233443349,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 0.8630972732654831,
+     "spread_cm": 1.2187889117077622,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.0147268824564508,
+     "spread_cm": 2.0141160063552084,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.7968982929924986,
+     "spread_cm": 3.1053580695205913,
+     "agree": 1.0,
+     "trusted": true
+    }
+   ],
+   "tests_imagined": 8,
+   "seconds": 32.659990549087524
+  },
+  {
+   "round": 4,
+   "exam_success": 0.7857142857142857,
+   "exam_per_spot": [
+    1.0,
+    0.9,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    0.6
+   ],
+   "exam_failures": [
+    "touched the glasses case",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "tipped over",
+    "missed the coaster",
+    "tipped over",
+    "missed the coaster"
+   ],
+   "videos": 10,
+   "minutes_of_my_time": 4.833333333333333,
+   "robot_minutes": 85.14333333333335,
+   "imagined": 3,
+   "train_episodes": 61,
+   "practice_success": 0.9615384615384616,
+   "practice_rates": [
+    1.0,
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "decisions": [
+    "ok",
+    "retry",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ],
+   "trust": [
+    {
+     "error_cm": 0.8145030065397317,
+     "spread_cm": 2.192117143393309,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 28.45385992979611,
+     "spread_cm": 2.731666192712797,
+     "agree": 0.5,
+     "trusted": false
+    },
+    {
+     "error_cm": 1.3309052568456905,
+     "spread_cm": 3.028359549137112,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.4825183230059853,
+     "spread_cm": 1.10538235224877,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.35133657325308,
+     "spread_cm": 1.0776171974597843,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 0.42872685262930904,
+     "spread_cm": 0.8800091906702769,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.9155775023681931,
+     "spread_cm": 2.305516918419394,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.2099387221845614,
+     "spread_cm": 0.9188798272351818,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.4632724937216366,
+     "spread_cm": 1.0195630340674147,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.6780492184443836,
+     "spread_cm": 0.8022682233443349,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 0.8630972732654831,
+     "spread_cm": 1.2187889117077622,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.0147268824564508,
+     "spread_cm": 2.0141160063552084,
+     "agree": 1.0,
+     "trusted": true
+    },
+    {
+     "error_cm": 1.7968982929924986,
+     "spread_cm": 3.1053580695205913,
+     "agree": 1.0,
+     "trusted": true
+    }
+   ],
+   "tests_imagined": 12,
+   "seconds": 31.449907064437866
+  },
+  {
+   "round": 5,
+   "exam_success": 0.7428571428571429,
+   "exam_per_spot": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.2,
+    0.9,
+    0.1
+   ],
+   "exam_failures": [
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "tipped over",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster",
+    "tipped over",
+    "missed the coaster",
+    "missed the coaster",
+    "missed the coaster"
+   ],
+   "videos": 10,
+   "minutes_of_my_time": 4.833333333333333,
+   "robot_minutes": 90.11500000000001,
+   "imagined": 3,
+   "train_episodes": 66
+  }
+ ],
+ "film_here": [
+  {
+   "strategy": "ladder",
+   "round": 0,
+   "spot": [
+    -0.033402603436484046,
+    -0.1933970183885737
+   ]
+  }
+ ],
+ "imagine_audits": [
+  {
+   "round": 1,
+   "spot": [
+    -0.033402603436484046,
+    -0.1933970183885737
+   ],
+   "real": true
+  },
+  {
+   "round": 1,
+   "spot": [
+    0.10607841739820906,
+    -0.1933970183885737
+   ],
+   "real": true
+  },
+  {
+   "round": 1,
+   "spot": [
+    0.10607841739820906,
+    -0.09531513313050216
+   ],
+   "real": true
+  }
+ ],
+ "test_audits": [
+  {
+   "round": 1,
+   "spot": 2,
+   "real_success": 1.0
+  },
+  {
+   "round": 1,
+   "spot": 5,
+   "real_success": 1.0
+  },
+  {
+   "round": 1,
+   "spot": 6,
+   "real_success": 1.0
+  },
+  {
+   "round": 2,
+   "spot": 2,
+   "real_success": 1.0
+  },
+  {
+   "round": 2,
+   "spot": 4,
+   "real_success": 1.0
+  },
+  {
+   "round": 2,
+   "spot": 5,
+   "real_success": 1.0
+  },
+  {
+   "round": 2,
+   "spot": 6,
+   "real_success": 1.0
+  },
+  {
+   "round": 2,
+   "spot": 8,
+   "real_success": 1.0
+  },
+  {
+   "round": 3,
+   "spot": 0,
+   "real_success": 0.5
+  },
+  {
+   "round": 3,
+   "spot": 2,
+   "real_success": 1.0
+  },
+  {
+   "round": 3,
+   "spot": 4,
+   "real_success": 1.0
+  },
+  {
+   "round": 3,
+   "spot": 5,
+   "real_success": 1.0
+  },
+  {
+   "round": 3,
+   "spot": 6,
+   "real_success": 1.0
+  },
+  {
+   "round": 3,
+   "spot": 8,
+   "real_success": 1.0
+  },
+  {
+   "round": 3,
+   "spot": 11,
+   "real_success": 1.0
+  },
+  {
+   "round": 3,
+   "spot": 12,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 0,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 2,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 3,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 4,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 5,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 6,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 7,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 8,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 9,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 10,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 11,
+   "real_success": 1.0
+  },
+  {
+   "round": 4,
+   "spot": 12,
+   "real_success": 1.0
+  }
+ ]
+}

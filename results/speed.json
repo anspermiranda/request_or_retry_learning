@@ -1,0 +1,47 @@
+[
+ {
+  "policy": "diffusion, DDPM 100 steps (baseline)",
+  "network_passes": 100,
+  "ms_per_decision": 6.038271950019407,
+  "decisions_per_second": 165.61029517671625,
+  "exam_success": 0.7285714285714285,
+  "exam_episodes": 70,
+  "speedup_vs_baseline": 1.0
+ },
+ {
+  "policy": "diffusion, DDIM 10 steps",
+  "network_passes": 10,
+  "ms_per_decision": 0.39055159002600703,
+  "decisions_per_second": 2560.4811900353793,
+  "exam_success": 0.7571428571428571,
+  "exam_episodes": 70,
+  "speedup_vs_baseline": 15.46088174834294
+ },
+ {
+  "policy": "diffusion, DDIM 4 steps (what the robot uses)",
+  "network_passes": 4,
+  "ms_per_decision": 0.16125168498547282,
+  "decisions_per_second": 6201.48558503491,
+  "exam_success": 0.7571428571428571,
+  "exam_episodes": 70,
+  "speedup_vs_baseline": 37.44625645656599
+ },
+ {
+  "policy": "distilled student, 1 pass",
+  "network_passes": 1,
+  "ms_per_decision": 0.011637189963948913,
+  "decisions_per_second": 85931.39779430605,
+  "exam_success": 0.4142857142857143,
+  "exam_episodes": 70,
+  "speedup_vs_baseline": 518.8771489273178
+ },
+ {
+  "policy": "behaviour cloning, 1 pass x 3 nets",
+  "network_passes": 3,
+  "ms_per_decision": 0.03895880494383164,
+  "decisions_per_second": 25668.13847195101,
+  "exam_success": 0.45714285714285713,
+  "exam_episodes": 70,
+  "speedup_vs_baseline": 154.99120054439578
+ }
+]

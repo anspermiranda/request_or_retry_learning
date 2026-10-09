@@ -1,0 +1,19 @@
+{
+ "can_error_cm_after_1s": 0.29423610708080633,
+ "after_2s": 0.43774272860617003,
+ "after_4s": 1.0315256424278354,
+ "reward_prediction_accuracy": 0.8333333333333334,
+ "reward_prediction_accuracy_open_loop": 0.4666666666666667,
+ "final_can_position_error_cm_median": 1.317729754106091,
+ "episodes_tested": 60,
+ "real_successes": 50,
+ "predicted_successes": 46,
+ "accuracy_where_trusted": 0.8666666666666667,
+ "accuracy_where_not_trusted": 0.8,
+ "spots_trusted": 15,
+ "spots": 20,
+ "imagined_self_tests": 79,
+ "imagined_self_tests_really_passed": 0.9746835443037974,
+ "imagined_demos_checked": 4,
+ "imagined_demos_that_really_worked": 1.0
+}

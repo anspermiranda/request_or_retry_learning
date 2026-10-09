@@ -1,0 +1,12 @@
+# Simulation and learning: everything after read_demos.py. Runs on a laptop CPU.
+mujoco>=3.2
+mink>=0.0.10
+daqp
+numpy>=1.26
+opencv-python
+matplotlib
+pillow
+
+# Reading the videos (read_demos.py). A GPU helps but isn't required.
+ultralytics        # YOLOE and SAM 2
+mediapipe

@@ -1,0 +1,207 @@
+{
+ "settings": {
+  "out": "out",
+  "strategies": [
+   "ladder",
+   "request_only",
+   "retry_only",
+   "random"
+  ],
+  "rounds": 5,
+  "seeds": 3,
+  "probe_tries": 2,
+  "exam_tries": 10,
+  "practice": 6,
+  "max_fix": 4,
+  "policy": "diffusion",
+  "wm_steps": 2500,
+  "imagine_steps": 160,
+  "workers": 16,
+  "no_videos": false,
+  "quick": false
+ },
+ "start_sets": [
+  [
+   "IMG_8682",
+   "IMG_8688",
+   "IMG_8690",
+   "IMG_8703",
+   "IMG_8707",
+   "IMG_8718",
+   "IMG_8723"
+  ],
+  [
+   "IMG_8688",
+   "IMG_8692",
+   "IMG_8696",
+   "IMG_8707",
+   "IMG_8708",
+   "IMG_8716",
+   "IMG_8717"
+  ],
+  [
+   "IMG_8683",
+   "IMG_8685",
+   "IMG_8692",
+   "IMG_8696",
+   "IMG_8703",
+   "IMG_8709",
+   "IMG_8714"
+  ]
+ ],
+ "practice_spots": [
+  [
+   -0.5913266867752566,
+   0.10084863738564093
+  ],
+  [
+   -0.5913266867752566,
+   0.19893052264371244
+  ],
+  [
+   -0.4518456659405634,
+   0.002766752127569383
+  ],
+  [
+   -0.3123646451058703,
+   -0.1933970183885737
+  ],
+  [
+   -0.3123646451058703,
+   -0.09531513313050216
+  ],
+  [
+   -0.3123646451058703,
+   0.002766752127569383
+  ],
+  [
+   -0.1728836242711772,
+   0.002766752127569383
+  ],
+  [
+   -0.033402603436484046,
+   -0.1933970183885737
+  ],
+  [
+   -0.033402603436484046,
+   -0.09531513313050216
+  ],
+  [
+   -0.033402603436484046,
+   0.002766752127569383
+  ],
+  [
+   0.10607841739820906,
+   -0.1933970183885737
+  ],
+  [
+   0.10607841739820906,
+   -0.09531513313050216
+  ],
+  [
+   0.10607841739820906,
+   0.002766752127569383
+  ]
+ ],
+ "exam_clips": [
+  "IMG_8697",
+  "IMG_8684",
+  "IMG_8693",
+  "IMG_8689",
+  "IMG_8694",
+  "IMG_8704",
+  "IMG_8710"
+ ],
+ "strategies": {
+  "ladder": {
+   "exam_success_start": 0.6523809523809524,
+   "exam_success_end": 0.7428571428571429,
+   "exam_success_end_per_run": [
+    0.7571428571428571,
+    0.7428571428571429,
+    0.7285714285714285
+   ],
+   "my_videos_used": 9.0,
+   "my_minutes": 4.3500000000000005,
+   "robot_minutes": 87.38944444444444,
+   "imagined_demos": 1.3333333333333333
+  },
+  "request_only": {
+   "exam_success_start": 0.6523809523809524,
+   "exam_success_end": 0.7238095238095239,
+   "exam_success_end_per_run": [
+    0.6857142857142857,
+    0.7428571428571429,
+    0.7428571428571429
+   ],
+   "my_videos_used": 13.333333333333334,
+   "my_minutes": 6.4444444444444455,
+   "robot_minutes": 103.16666666666667,
+   "imagined_demos": 0.0
+  },
+  "retry_only": {
+   "exam_success_start": 0.6523809523809524,
+   "exam_success_end": 0.7380952380952381,
+   "exam_success_end_per_run": [
+    0.7571428571428571,
+    0.7142857142857143,
+    0.7428571428571429
+   ],
+   "my_videos_used": 7.0,
+   "my_minutes": 3.3833333333333333,
+   "robot_minutes": 133.42333333333332,
+   "imagined_demos": 0.0
+  },
+  "random": {
+   "exam_success_start": 0.6523809523809524,
+   "exam_success_end": 0.6904761904761904,
+   "exam_success_end_per_run": [
+    0.7571428571428571,
+    0.5714285714285714,
+    0.7428571428571429
+   ],
+   "my_videos_used": 17.0,
+   "my_minutes": 8.216666666666667,
+   "robot_minutes": 114.68166666666666,
+   "imagined_demos": 0.0
+  },
+  "all_videos": {
+   "exam_success_end": 0.7761904761904762,
+   "exam_success_end_per_run": [
+    0.8142857142857143,
+    0.8,
+    0.7142857142857143
+   ],
+   "exam_per_spot": [
+    0.9333333333333332,
+    1.0,
+    1.0,
+    1.0,
+    0.3,
+    1.0,
+    0.19999999999999998
+   ],
+   "my_videos_used": 33.0
+  }
+ },
+ "world_model": {
+  "can_error_cm_after_1s": 0.29423610708080633,
+  "after_2s": 0.43774272860617003,
+  "after_4s": 1.0315256424278354,
+  "reward_prediction_accuracy": 0.8333333333333334,
+  "reward_prediction_accuracy_open_loop": 0.4666666666666667,
+  "final_can_position_error_cm_median": 1.317729754106091,
+  "episodes_tested": 60,
+  "real_successes": 50,
+  "predicted_successes": 46,
+  "accuracy_where_trusted": 0.8666666666666667,
+  "accuracy_where_not_trusted": 0.8,
+  "spots_trusted": 15,
+  "spots": 20,
+  "imagined_self_tests": 79,
+  "imagined_self_tests_really_passed": 0.9746835443037974,
+  "imagined_demos_checked": 4,
+  "imagined_demos_that_really_worked": 1.0
+ },
+ "minutes_total": 34.929153033097585
+}

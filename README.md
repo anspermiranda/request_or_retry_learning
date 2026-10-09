@@ -1,4 +1,4 @@
-# Request or Retry learning
+# Request or Retry
 
 **A robot arm learns to put a can on a coaster from my phone videos. It starts with 7 videos, checks itself at 13
 practice spots across the desk, and fixes each weak spot with the cheapest help that works: imagine it (free),
@@ -12,22 +12,40 @@ saw, and at 100 random spots on the desk.**
 | **mine: imagine → retry → request** | **74%** | **9** | **87** |
 | always ask for a video (request only) | 72% | 13.3 | 103 |
 | always practise (retry only) | 74% | 7 | 133 |
-| all 33 videos at the start, trained once | 78% | 33 | about 75 |
+| all 33 videos at the start, trained once | 78% | 33 | about 75 (estimate) |
 
 - **success:** the can ends upright on the coaster, the gripper has let go, and nothing else on the desk was touched.
 - **my videos used:** the 7 it starts with, plus the ones it asked me for.
 - **robot minutes:** how long the arm is busy: turning each video into robot demos, checking itself and practising,
   plus 20 s to put the can back after every attempt.
+- **3 runs:** one starts from my 7 videos, the other two from 7 picked at random.
 - **all 33 videos at the start:** the upper bound. It gets every video it could ever ask for and trains on them once,
   so it never needs to ask or practise.
 
 Mine gets 74%, close to the 78% from all 33 videos, but needs only 9 of them. Practising alone also gets 74%, but
 takes 133 robot minutes to my 87.
 
-The exam is harder than the rest of the desk: 2 of its 7 spots are right next to the robot's base, where every method
-fails most of the time (see [Where it fails](#where-it-fails-and-why)). On the other 5, my robot succeeds 97% of the
-time. At 100 random spots on the desk it succeeds 96%, and 97% when it finds the can with its own camera (see
-[Anywhere on the desk](#anywhere-on-the-desk)).
+The exam is harder than the random spots. 2 of its 7 spots are right next to the robot's base, closer than any video
+it can learn from, and every method fails there most of the time (see [Where it fails](#where-it-fails-and-why)). On
+the other 5, mine succeeds 97% of the time. At 100 random spots on the desk, the robot from my run succeeds 96%, and
+97% when it finds the can with its own camera (see [Anywhere on the desk](#anywhere-on-the-desk)).
+
+## What I built
+
+Everything here starts from my own phone videos:
+
+- 42 videos of my hand moving a can onto a coaster, read with YOLOE, SAM 2 and MediaPipe into the can's 3D path and
+  the moments my hand grasps and lets go
+- a MuJoCo copy of my desk, where a Franka Panda copies each video; the same video also works from new start spots,
+  and I test what changes when the robot stands somewhere else
+- a small diffusion policy bootstrapped from 7 videos, then trained further every round on what it collects;
+  practising and keeping the attempts that earned the reward is the RL part
+- a world model used as a learned simulator: trained only on what the arm really did, it lets the robot check itself
+  and imagine new demos without the arm, at the spots where it has proven right
+- a robot that works out where it needs a new video before asking me for one
+- a version of the policy that decides 37× faster with the same success
+
+All the learning is plain NumPy and runs on a laptop CPU.
 
 ## The idea
 
@@ -73,7 +91,7 @@ flowchart TD
 - **The coaster** is found by its round shape in a bird's-eye view of the desk (green ring). The other objects on the
   desk are measured in the same view.
 - **The 3D path.** While the can stands on the desk, its position comes from where it touches the desk. While it's
-  carried, it comes from a real-size can model fitted to its outline. The two agree within 0.1–2.4 cm at rest.
+  carried, it comes from a real-size can model fitted to its outline. The two agree within 0.1–2.3 cm at rest.
 - **The moments.** From my hand and the can's motion: when I grasp, lift, set down and let go.
 
 40 of my 42 videos are usable. IMG_8715 never really moves the can, and IMG_8700's measurement failed its own check.
@@ -99,27 +117,26 @@ robot's own camera finds it.
 - **The desk.** A MuJoCo copy of my desk: the coaster, laptop, book and the other objects are where my videos show
   them, and a Franka Panda (from MuJoCo Menagerie) stands where I sat. It works like a Gym environment, with `reset()`
   and `step()`.
-- **From my hand: when. From the can: where.** The 21 points on my hand tell the robot when I grasped and when I let
-  go; the can's path tells it where to carry the can. What it doesn't copy is my hand's shape: a two-finger gripper
-  can't use my fingers and wrist, so it always grasps from the top, at the same height on the can. So it reaches the
-  can where it stood, closes when my hand closed, carries it along my path with my timing (1.5× slower), sets it down
-  where I did and lets go.
-- **A video becomes a controller, not a recording.** At every step it looks at where the can really is: it goes to the
-  can wherever it stands, tries again if the grasp misses, and carries it along my path point by point. So the same
-  video also works when the can is nudged, inside the world model, and from a different start spot: my path is
-  shifted to start there, and the shift fades out along the way, so it still ends on the coaster. That's how one of my
-  videos can help at a weak spot nearby.
-- **Pushes.** Each video gives 4 demos: an exact copy, and three with small random pushes along the way, so the robot
-  also sees how to get back on track.
+- **Timing from my hand, path from the can.** The 21 points on my hand tell the robot when I grasped and when I let
+  go; the can's path tells it where to carry the can. It doesn't copy my hand's shape: a two-finger gripper can't use
+  my fingers and wrist, so it always grasps from the top, at the same height on the can. So it reaches the can where it
+  stood, closes when my hand closed, carries it along my path with my timing (1.5× slower), sets it down where I did
+  and lets go.
+- **Each video becomes a controller.** At every step it looks at where the can really is: it goes to the can wherever
+  it stands, tries again if the grasp misses, and carries it along my path point by point. So the same video also
+  works when the can is nudged, inside the world model, and from a different start spot: my path is shifted to start
+  there, and the shift fades out along the way, so it still ends on the coaster. That's how one of my videos can help
+  at a weak spot nearby.
+- **Pushes.** Each video gives up to 4 demos: an exact copy, and three with small random pushes along the way, so the
+  robot also sees how to get back on track. Only copies that work are kept.
 - **A safety margin.** My hand passed just over the desk hub and the glasses case because I could see them. The robot
-  can't, so wherever my path goes over an object it carries the can at least 2 cm above it. Without the margin, the
-  carried can touched something in 6 of my videos, and my robot ended at 59% instead of 74%. The margin changes how my
-  videos become demos, not the test.
-- **Result.** 39 of my 40 videos become robot demos. IMG_8710 starts so close to the robot's base that its elbow hits
-  its limit.
+  can't, so wherever my path goes over an object it carries the can at least 2 cm above it.
+- **Result.** 39 of my 40 videos become robot demos. The one that fails, IMG_8710, starts very close to the robot's
+  base, and its copy times out without moving the can.
 - **Where the robot stands matters.** Standing at the right side of the desk instead
-  (`retarget.py --base 0.35 -0.10`), the same robot can copy only 23 of the 40 videos: the far-left ones are out of
-  its reach. Which of my videos are useful depends on the robot's body and where it stands.
+  (`retarget.py --base 0.35 -0.10`), the same robot can copy only 23 of the 40 videos: most of the others start too
+  far to the left for it to reach, and 3 start too close to it. Which of my videos are useful depends on the robot's
+  body and where it stands.
 
 `python watch.py IMG_8682 --copy --viewer` plays a copy live in the MuJoCo window, with my path in yellow and the
 robot's in green.
@@ -137,8 +154,9 @@ robot's in green.
 
 **Why a pile.** In real life I would film a new video when the robot asks. To keep the experiment repeatable I filmed
 all of them in advance. A request gets the pile video whose can starts closest to the weak spot, if one starts within
-10 cm; otherwise the robot writes the spot down as "film here" (where a new video is needed) and practises instead.
-Every method draws from the same pile, so the comparison is fair.
+10 cm. Otherwise the spot goes on a "film here" list (where I'd need to film a new video); my robot then practises
+there instead, while "always ask" gets no help at that spot. Every method draws from the same pile, so the comparison
+is fair.
 
 ### Step 4. Learn, check itself, and get help
 
@@ -148,20 +166,15 @@ Every method draws from the same pile, so the comparison is fair.
 and the coaster are relative to its gripper, and how far its fingers are open, and plans its next 8 moves. It never
 sees where on the desk it is, so it can't memorise spots.
 
-I started with plain behaviour cloning, and it didn't work well. It copied its own last gripper command, so it never
-closed, and it blurred the grasp and the release. Removing that input, showing it those moments 10× more often and
-planning 8 moves ahead all helped, but on the same data it still only gets 46% on the exam, against 76% for the
-diffusion policy.
-
 **Each round** (5 rounds):
 1. Train the policy on everything it has: the robot demos from its videos, and its own attempts that worked
    (practised or imagined). Round 0 starts from scratch; later rounds keep training the same network.
 2. Check itself at 13 practice spots spread over the desk, 2 tries each, with the can nudged by about 1 cm. These are
    its own checks; the exam spots are kept away from them.
-3. Take its weakest spots (up to 4, only those below 100%) and fix each with the cheapest help that works: imagine,
+3. Update the world model on everything the arm has really done, and work out where it can be trusted.
+4. Take its weakest spots (up to 4, only those below 100%) and fix each with the cheapest help that works: imagine,
    retry, request (see [The idea](#the-idea)). Where it already succeeds, it asks for nothing: a video there would
-   cost my time for no gain.
-4. Update the world model on everything the arm has really done, draw a map of the round, and start the next one.
+   cost my time for no gain. Then draw a map of the round.
 
 **Costs** are counted the same way for every method:
 - **my time:** each video I filmed costs about 30 s of my time, from the gaps between my recordings
@@ -170,11 +183,6 @@ diffusion policy.
 
 Where the world model has proven right and the robot already succeeds, it also checks itself in its head instead of
 with the arm, for free.
-
-**Practice is the reinforcement learning part.** The reward is 1 when the can ends upright on the coaster with nothing
-else touched, and 0 otherwise. The robot keeps its own attempts that earned a 1 and trains on them: filtered behaviour
-cloning, the simplest form of reward-weighted regression. Every attempt costs 30–45 s of robot time with the reset, so
-a whole run has only about 150 real attempts, far too few for policy-gradient methods like PPO.
 
 <img src="results/ladder_map_round0.png" width="49%"> <img src="results/ladder_map_round4.png" width="49%">
 
@@ -189,10 +197,10 @@ videos also imagined and asked.*
 
 - **7 exam spots:** where the cans start in the 7 exam videos, which the robot never sees. 10 tries at each, with the
   can nudged by about 1 cm each time: 70 tries.
-- **100 random spots** anywhere in the area where my videos start, not on the coaster and not on or touching another
-  object. One try each, and a second time with the robot **finding the can with its own camera** at every decision
-  (a colour + depth camera across the desk that picks out the light-blue can) instead of being told where it is. The
-  coaster never moves, so its position is known.
+- **100 random spots** anywhere in the area where my videos start, at least 12 cm from the coaster's centre and clear
+  of the other objects. One try each, and a second time with the robot **finding the can with its own camera** at
+  every decision (a colour + depth camera across the desk that picks out the light-blue can) instead of being told
+  where it is. The coaster never moves, so its position is known.
 - **A try counts only if** the can ends upright on the coaster, the gripper has let go, and nothing else on the desk
   was touched, by the arm or by the can. My path isn't compared: any path is fine. A failure anywhere along the way
   (dropped, tipped over, touched something, missed the coaster) counts against the spot where the can started, and the
@@ -200,29 +208,28 @@ videos also imagined and asked.*
 - The exam is only measured, never used to decide anything. It is separate from the robot's own checks at the 13
   practice spots.
 
-My first version only checked the arm for touches, not the can it carries. Every method then ended at 70–72% and
-looked the same; checking the can too is what showed the real differences.
-
 ## Results
 
 | on the 7 exam spots (70 tries; average of 3 runs) | success | my videos used | robot minutes |
 |---|---|---|---|
-| start: my 7 videos, no help yet | 65% | 7 | 16 |
+| start: 7 videos, no help yet | 65% | 7 | 16 |
 | **mine: imagine → retry → request** | **74%** | **9** | **87** |
 | always ask for a video (request only) | 72% | 13.3 | 103 |
 | always practise (retry only) | 74% | 7 | 133 |
 | 2 random videos per round | 69% | 17 | 115 |
-| all 33 videos at the start, trained once | 78% | 33 | about 75 |
+| all 33 videos at the start, trained once | 78% | 33 | about 75 (estimate) |
 
 - **Mine ties for the best score of the methods that learn round by round, with the least robot time.** Always
   practising matched it, but needed 53% more robot time to save 2 videos. Always asking needed 6.3 extra videos
-  instead of 2, and still ended lower.
-- **It gets within 4 points of all 33 videos**, with 9.
-- **It asks only when practice can't fix a spot.** Starting from my 7 videos it never asked: practising fixed every
-  weak spot. Starting from the two random sets of 7, it asked for 3 videos each.
-- **Most of the robot time it saves comes from imagination.** It checked itself in its head 79 times instead of with
-  the arm. Each check skips 2 real attempts, so that's about 90 robot minutes over the 3 runs, and those checks were
-  right 97% of the time.
+  instead of 2, for 72%.
+- **How much help pays off depends on the start.** From my own 7 videos the robot already scored 81% before any help
+  and ended at 76%, within noise, even though its practice spots went from 85% to 96%. From the two random sets of 7,
+  it started at 50% and 64% and climbed to 74% and 73%.
+- **It asks only when it has nothing to build on, or practice failed.** From my 7 videos it got no new video: the one
+  spot where it asked had no pile video nearby, so it practised there instead. From each random set it asked for 3.
+- **Most of the robot time it saves comes from imagination.** In my run, mine and always-practise made exactly the
+  same fixes, and the 18 self-checks it did in its head saved 19 robot minutes. Over the 3 runs it did 79, about 80
+  robot minutes, and they were right 97% of the time.
 - Differences of a few points are within noise (210 tries per method).
 
 ![exam success against rounds, my videos used and robot time](results/learning_curves.png)
@@ -235,8 +242,8 @@ looked the same; checking the can too is what showed the real differences.
 
 ![my robot at 100 random spots, finding the can with its own camera: green succeeded, red failed](results/desk_map.png)
 
-The robot tested here is the one from my run: it learned from my 7 videos and its own practice, and never needed to
-ask for another video.
+The robot tested here is the one from my run: it learned from my 7 videos and its own practice, and never got another
+video.
 
 | 100 random spots on the desk, one try each | success |
 |---|---|
@@ -244,14 +251,14 @@ ask for another video.
 | my robot, told where the can is | 96% |
 | all 33 videos at the start, told where the can is | 97% |
 
-- **It works almost anywhere on the desk, not just where my videos start.** 31 of the 100 spots are more than 10 cm
-  from where any video it learned from starts, and it still succeeds at 90% of those. It learned the task, not my
-  spots.
-- **Seeing the can for itself costs nothing here**: 97% against 96%, the same within one spot.
-- **The few failures are scattered**, not in one area: tipped over, touched the book or the charger, missed the
-  coaster.
-- **Why higher than the exam's 74%?** The exam counts each of its 7 spots equally, and 2 of them are the two hardest
-  places on the desk (see below). On its other 5 spots it also succeeds 97% of the time.
+- 31 of the 100 spots are more than 10 cm from where any video it learned from starts, and it still succeeds at 90%
+  of those.
+- Seeing the can for itself costs nothing here: 97% against 96%, the same within one spot.
+- Most failures are far from its videos: 3 of its 4 are more than 12 cm from any video it learned from. With its own
+  camera, 2 of its 3 failures touched the same charger.
+- Why higher than the exam? The random spots stay at least 12 cm from the coaster's centre, and none is as close to
+  the base as the two hard exam spots, so those situations never come up. On the exam's other 5 spots, this robot
+  succeeded 50 times out of 50.
 
 All three versions side by side: [results/desk_map_compare.png](results/desk_map_compare.png).
 
@@ -268,9 +275,10 @@ All three versions side by side: [results/desk_map_compare.png](results/desk_map
 | IMG_8710 | 27 cm | 40% | 17% | 20% |
 
 - **On 5 of the 7 spots it succeeds 97% of the time.**
-- **The two failures are the spots right next to the robot's base.** None of the videos it can learn from starts that
-  close; the closest is 32 cm away. At IMG_8710 the robot can't even copy my own video, because its elbow hits its
-  limit. Every method fails there most of the time, even with all 33 videos.
+- **The two failures are the spots right next to the robot's base**, 27 and 28 cm away, while the closest video it can
+  learn from starts 32 cm away. IMG_8694 also starts only 10 cm from the coaster's centre, closer than any practice
+  spot, and at IMG_8710 even the direct copy of my video times out. Every method fails at both most of the time, even
+  with all 33 videos.
 
 More in [results/evaluation.md](results/evaluation.md):
 - at the 7 spots it learned from, it succeeds 100% of the time, and its can stays 1.7 cm from my path on average
@@ -286,23 +294,22 @@ instead. It is five small networks that predict the next 0.1 s (where the grippe
 from the current state and the move. They learn only from what the arm has really done so far: the robot demos made
 from my videos, its self-checks and its practice. They are retrained every round, and nothing is pretrained.
 
-| tested on attempts it never saw | |
+| tested on 60 attempts it never saw (50 of them worked) | |
 |---|---|
-| reward predicted correctly | 83% (87% where it has earned trust, 80% elsewhere) |
-| can position error, 1 s and 2 s ahead, with no correction | 0.3 cm and 0.4 cm |
+| reward predicted correctly, with the policy acting inside the model | 83%, which always guessing "success" would also get; it caught 7 of the 10 failures |
+| reward predicted correctly, replaying the real moves with no feedback | 47% |
+| can position error, replaying the real moves | 0.4 cm after 2 s (mostly before the grasp), 1.0 cm after 4 s |
+| where the can ends up, with the policy acting inside the model | 1.3 cm off (median) |
 | self-checks done in its head instead of with the arm | 79, right 97% of the time |
-| imagined demos it trained on | 4, all of which really worked in physics |
+| imagined fixes | 4; each time, the same video really worked when checked in physics |
 
-**Trust** is measured spot by spot. The model is trusted at a spot only after it predicted every real attempt there
-correctly. The model can't see the objects on the desk, so trust is what stops the robot relying on it near them.
+On its own, the model isn't accurate enough to trust everywhere: overall it predicts the reward no better than always
+guessing "success", and its errors grow over time. So **trust** is measured spot by spot. The model is trusted at a
+spot only after it predicted every real attempt there correctly; there it was right 87% of the time, against 80%
+elsewhere. It can't see the objects on the desk, so trust is also what stops the robot relying on it near them. In
+practice it only replaces checks at trusted spots where the robot already succeeds.
 
 ![the same policy in physics and inside the world model](docs/imagined_vs_real.gif)
-
-**Why a world model, and not a VLA like SmolVLA?** SmolVLA's guide recommends about 50 demonstrations and says 25
-weren't enough, while my robot starts from 7 videos on purpose. And the experiment retrains the policy 72 times
-(4 methods × 3 runs × 6 trainings), where one standard SmolVLA fine-tune takes about 4 hours on a datacentre GPU. The
-robot demos made from my videos are exactly the kind of data a VLA is fine-tuned on, so swapping one in, with camera
-images rendered from the copy of my desk, is the natural next step.
 
 ## Speed
 
@@ -318,8 +325,53 @@ The final policy from my run (76% on the exam), run different ways on the same 7
 | a student distilled into 1 pass | 1 | 0.01 (519× faster) | 41% |
 | behaviour cloning on the same data | 3 | 0.04 | 46% |
 
-The policy predicts clean moves rather than noise, which is what keeps 4 steps as good as 100. The one-pass student is
-fast but blurs the moments that matter most: closing and letting go.
+The policy predicts clean moves rather than noise, which suits sampling in few steps: here 4 steps did as well as 100.
+The one-pass student is fast, but drops to 41%.
+
+## Design notes: what worked, and what didn't
+
+**Copy the can, and take only the timing from my hand.** My hand and a two-finger gripper don't move alike, so copying
+my hand's pose was never going to work. Copying where the can went, and closing and opening when my hand did, turned
+39 of my 40 videos into robot demos.
+
+**Carry the can 2 cm above anything in the way.** My first evaluation only checked the arm for touches, not the can it
+carries, so it missed the can brushing past things. Checking the can too showed it: without the margin, the carried
+can touched something in 6 of my videos, and my robot ended at 59% (on a 5-try exam). With it: no touches, and 74%.
+The margin only changes how my videos become demos; the exam's spots and rules stay the same.
+
+**Ask only where it fails.** A video of a spot where the robot already succeeds would cost my time for nothing. How much
+asking helps depends on where it starts: from my 7 videos it never needed a new one, while from 7 random ones it asked
+for 3 and climbed from 50% and 64% to 74% and 73%.
+
+**Keep the RL simple.** Practice is the RL part. The state is the gripper, the can and the fingers; an action is a
+move of up to 2.5 cm plus open or close, 10 times a second; the reward is 1 when the can ends upright on the coaster
+with nothing else touched. The robot keeps the attempts that earned a 1 and trains on them (filtered behaviour
+cloning, the simplest form of reward-weighted regression). At 30–45 s per attempt with the reset, a whole run has only
+about 150 real attempts, far too few for PPO. Even so, practising alone did as well as asking me for videos (74%
+against 72%); it just costs more robot time.
+
+**Trust the world model only where it has been right.** One overall accuracy number would hide where the model goes
+wrong, and it can't see the objects on the desk. Measuring trust spot by spot let it take over self-checks only where
+it had earned it, and there it was right 97% of the time.
+
+**A world model rather than a VLA.** SmolVLA's guide recommends about 50 demonstrations and says 25 weren't enough,
+while my robot starts from 7 videos on purpose. The experiment also retrains the policy 72 times (4 methods × 3 runs
+× 6), where one standard SmolVLA fine-tune takes about 4 hours on a datacentre GPU. The robot demos made from my videos
+are exactly the kind of data a VLA is fine-tuned on, so swapping one in, with camera images rendered from the copy of
+my desk, is the natural next step.
+
+**A diffusion policy, not plain behaviour cloning.** Behaviour cloning was my first policy, and it didn't work. It
+copied its own last gripper command, so it never closed, and it blurred the grasp and the release. Removing that
+input, showing it those moments 10× more often and planning 8 moves ahead helped, but it stayed at 46%, against 76%
+for the diffusion policy on the same data.
+
+**What didn't work:**
+- The two spots right next to the robot's base. Every method fails there most of the time, even with all 33 videos.
+- Practice didn't raise the exam score from my own 7 videos: it started at 81% and ended at 76%, within noise, even
+  though the robot's practice spots went from 85% to 96%.
+- The world model is only reliable where it has proven itself: overall it predicts the reward no better than always
+  guessing "success", and replaying the real moves without feedback, only 47% right.
+- Squeezing the policy into one network pass: 519× faster, but only 41%.
 
 ## How to run it
 
@@ -388,7 +440,8 @@ python retarget.py                     # -> sim/, prints "The robot copied 39/40
 python retarget.py --base 0.35 -0.10   # the robot at the right side of the desk -> sim_base/, prints 23/40
 ```
 
-**3d. Learn from my 7 videos, and compare every method** (about 40 minutes):
+**3d. Learn from my 7 videos, and compare every method** (about 40 minutes on a 16-thread laptop; longer with fewer
+cores):
 
 ```bash
 python experiment.py
@@ -413,7 +466,7 @@ python desk_test.py   # 100 random spots on the desk -> results/desk_map.png (96
 python speed.py       # the same policy, run faster -> results/speed.json (DDIM 4 steps: 37x faster)
 ```
 
-**3f. Make the side-by-side videos and the GIFs on this page:**
+**3f. Make the side-by-side videos and the GIFs on this page** (needs the videos from 3a, and 3b for the last GIF):
 
 ```bash
 python watch.py IMG_8707 --copy --save --no-window      # -> results/watch_IMG_8707_copy.mp4
@@ -425,8 +478,9 @@ python make_gif.py results/imagined_vs_real.mp4 docs/imagined_vs_real.gif
 python make_gif.py out/IMG_8707/annotated.mp4 docs/what_the_computer_sees.gif
 ```
 
-**Short on time?** Skip 3a and 3b: my measurements are already in `out/`, so you can start at 3c. Steps 3c to 3f are
-also in one script, `bash run_all.sh` (about an hour).
+**Short on time?** Skip 3a and 3b and run 3c to 3e: my measurements are already in `out/`. Without the videos, the
+experiment assumes 45 s of my time per video instead of the measured 29 s; nothing else changes. Skip 3f too, or the
+GIFs get remade with a grey left side. `bash run_all.sh` runs 3c to 3f in one go, once the videos are downloaded.
 
 ## Files
 
